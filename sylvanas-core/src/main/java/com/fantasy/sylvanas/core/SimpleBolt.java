@@ -40,7 +40,7 @@ public class SimpleBolt implements IBasicBolt, ICommitter {
     public static final String COUNT_BOLT_NAME = "Count";
     public static final String SUM_BOLT_NAME = "Sum";
     private static final long serialVersionUID = 5720810158625748042L;
-    private static final Logger LOG = LoggerFactory.getLogger(SimpleBolt.class);
+    private static final Logger logger = LoggerFactory.getLogger(SimpleBolt.class);
     private Map conf;
 
     private TimeCacheMap<BatchId, AtomicLong> counters;
@@ -53,25 +53,18 @@ public class SimpleBolt implements IBasicBolt, ICommitter {
         int timeoutSeconds = JStormUtils.parseInt(conf.get(Config.TOPOLOGY_MESSAGE_TIMEOUT_SECS), 30);
         counters = new TimeCacheMap<>(timeoutSeconds);
 
-        LOG.info("Successfully do prepare");
+        logger.info("Successfully do prepare");
     }
 
     @Override
     public void execute(Tuple input, BasicOutputCollector collector) {
-        BatchId id = (BatchId) input.getValue(0);
-        Long value = input.getLong(1);
-
-        AtomicLong counter = counters.get(id);
-        if (counter == null) {
-            counter = new AtomicLong(0);
-            counters.put(id, counter);
-        }
-        counter.addAndGet(value);
+        String value = input.getString(0);
+        System.out.println(value);
     }
 
     @Override
     public void cleanup() {
-        LOG.info("Successfully do cleanup");
+        logger.info("Successfully do cleanup");
     }
 
     @Override
@@ -86,11 +79,11 @@ public class SimpleBolt implements IBasicBolt, ICommitter {
 
     @Override
     public byte[] commit(BatchId id) throws FailedException {
-        LOG.info("Receive BatchId " + id);
+        logger.info("Receive BatchId " + id);
         if (currentId == null) {
             currentId = id;
         } else if (currentId.getId() >= id.getId()) {
-            LOG.info("Current BatchId is " + currentId + ", receive:" + id);
+            logger.info("Current BatchId is " + currentId + ", receive:" + id);
             throw new RuntimeException();
         }
         currentId = id;
@@ -100,18 +93,18 @@ public class SimpleBolt implements IBasicBolt, ICommitter {
             counter = new AtomicLong(0);
         }
 
-        LOG.info("Flush " + id + "," + counter);
+        logger.info("Flush " + id + "," + counter);
         return Utils.serialize(id);
     }
 
     @Override
     public void revert(BatchId id, byte[] commitResult) {
-        LOG.info("Receive BatchId " + id);
+        logger.info("Receive BatchId " + id);
 
         BatchId failedId = (BatchId) Utils.javaDeserialize(commitResult);
 
         if (!failedId.equals(id)) {
-            LOG.info("Deserialized error  " + id);
+            logger.info("Deserialized error  " + id);
         }
     }
 }

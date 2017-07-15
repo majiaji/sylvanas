@@ -31,14 +31,12 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import shade.storm.com.google.common.collect.Lists;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-@Component
 public class SimpleSpout implements IBatchSpout {
     private static final Logger logger = LoggerFactory.getLogger(SimpleSpout.class);
     KafkaConsumer<String, String> kafkaConsumer;
@@ -48,6 +46,7 @@ public class SimpleSpout implements IBatchSpout {
 
     @Override
     public void prepare(Map stormConf, TopologyContext context) {
+        logger.error("prepare SimpleSpout");
         topicList = Lists.newLinkedList();
         topicList.add("sylvanas");
         props = new Properties();
@@ -63,12 +62,15 @@ public class SimpleSpout implements IBatchSpout {
 
     @Override
     public void execute(Tuple input, BasicOutputCollector collector) {
+        logger.error("SimpleSpout start Execute");
         try {
             while (true) {
                 try {
                     ConsumerRecords<String, String> records = kafkaConsumer.poll(pollTimeout);
                     for (ConsumerRecord<String, String> record : records) {
-                        collector.emit(new Values(record.value()));
+                        if (record.value() != null) {
+                            collector.emit(new Values(record.value()));
+                        }
                     }
                 } catch (Throwable t) {
                     logger.error(t.getMessage(), t);

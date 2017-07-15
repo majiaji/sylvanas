@@ -22,36 +22,32 @@ import backtype.storm.topology.BoltDeclarer;
 import backtype.storm.topology.TopologyBuilder;
 import com.alibaba.jstorm.batch.BatchTopologyBuilder;
 import org.junit.Assert;
-import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
-@Service
 public class SimpleBatchTopology {
+    private static final Logger logger = LoggerFactory.getLogger(SimpleSpout.class);
+
     static boolean isLocal = true;
     static Config conf = JStormHelper.getConfig(null);
     static String topologyName;
-    @Resource
-    private SimpleSpout simpleSpout;
 
     public TopologyBuilder setBuilder() {
         BatchTopologyBuilder topologyBuilder = new BatchTopologyBuilder(topologyName);
-        BoltDeclarer boltDeclarer = topologyBuilder.setSpout("Spout", simpleSpout, 1);
+        BoltDeclarer boltDeclarer = topologyBuilder.setSpout("Spout", new SimpleSpout(), 1);
         topologyBuilder.setBolt("Bolt", new SimpleBolt(), 2).shuffleGrouping("Spout");
         return topologyBuilder.getTopologyBuilder();
     }
 
-    @PostConstruct
     void init() {
+        logger.error("prepare SimpleBatchTopology");
         conf = new Config();
         isLocal = true;
         String[] className = Thread.currentThread().getStackTrace()[1].getClassName().split("\\.");
         topologyName = className[className.length - 1];
 
         try {
-            JStormHelper.runTopology(setBuilder().createTopology(), topologyName, conf, 100,
-                    new JStormHelper.CheckAckedFail(conf), isLocal);
+            JStormHelper.runTopology(setBuilder().createTopology(), topologyName, conf, 1000, new JStormHelper.CheckAckedFail(conf), isLocal);
         } catch (Exception e) {
             e.printStackTrace();
             Assert.fail("Failed");
