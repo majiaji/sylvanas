@@ -19,23 +19,16 @@
             <artifactId>jstorm-core</artifactId>
         </dependency>
 
-        <!--test-->
+        <!--kafka-->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <!--<version>4.12</version>-->
-            <!--<scope>test</scope>-->
-        </dependency>
-        <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
-            <version>2.5</version>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
         </dependency>
 
-        <!--数据源-->
+        <!--own client-->
         <dependency>
             <groupId>com.fantasy</groupId>
-            <artifactId>sylvanas-kafka</artifactId>
+            <artifactId>sylvanas-client</artifactId>
         </dependency>
 
     </dependencies>
