@@ -42,6 +42,7 @@ public class RedisCenter {
 
 
     void destory() {
+        logger.warn("redis poll start destory");
         if (pool != null) {
             pool.destroy();
         }

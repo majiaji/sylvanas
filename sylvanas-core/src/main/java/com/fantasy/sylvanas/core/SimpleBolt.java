@@ -30,11 +30,15 @@ import com.alibaba.jstorm.batch.BatchId;
 import com.alibaba.jstorm.batch.ICommitter;
 import com.alibaba.jstorm.utils.JStormUtils;
 import com.alibaba.jstorm.utils.TimeCacheMap;
+import com.fantasy.sylvanas.client.RedisCenter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+import redis.clients.jedis.Jedis;
+import shade.storm.com.google.common.base.Splitter;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -47,22 +51,28 @@ public class SimpleBolt implements IBasicBolt, ICommitter {
 
     private TimeCacheMap<BatchId, AtomicLong> counters;
     private BatchId currentId;
-//    private ApplicationContext applicationContext;
+
+    private RedisCenter redisCenter;
 
     @Override
     public void prepare(Map stormConf, TopologyContext context) {
         this.conf = stormConf;
-
         int timeoutSeconds = JStormUtils.parseInt(conf.get(Config.TOPOLOGY_MESSAGE_TIMEOUT_SECS), 30);
         counters = new TimeCacheMap<>(timeoutSeconds);
-//        applicationContext = new ClassPathXmlApplicationContext("spring-sylvanas-core-main.xml");
-
+        ApplicationContext applicationContext = new FileSystemXmlApplicationContext("spring-sylvanas-core-main.xml");
+        redisCenter = (RedisCenter) applicationContext.getBean("redisCenter");
         logger.info("Successfully do prepare");
     }
 
     @Override
     public void execute(Tuple input, BasicOutputCollector collector) {
         String value = input.getString(0);
+        List<String> wordList = Splitter.on(" ").splitToList(value);
+        Jedis jedis = redisCenter.getInstance();
+        for (String each : wordList) {
+            jedis.hincrBy("wordCount", each, 1);
+        }
+        jedis.close();
         System.out.println(value);
     }
 

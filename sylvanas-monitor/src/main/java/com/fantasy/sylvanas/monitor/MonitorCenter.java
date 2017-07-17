@@ -1,8 +1,10 @@
-package com.fantasy.sylvanas.service;
+package com.fantasy.sylvanas.monitor;
 
 import com.fantasy.sylvanas.client.RedisCenter;
 import org.springframework.stereotype.Service;
+import redis.clients.jedis.Jedis;
 
+import javax.annotation.Resource;
 import java.util.Map;
 
 /**
@@ -10,9 +12,14 @@ import java.util.Map;
  */
 @Service
 public class MonitorCenter {
+
+    @Resource
     private RedisCenter redisCenter;
 
-    Map<String, String> getWordCountList() {
+    public Map<String, String> getWordCount(String key) {
         Jedis jedis = redisCenter.getInstance();
+        Map<String, String> result = jedis.hgetAll(key);
+        jedis.close();
+        return result;
     }
 }

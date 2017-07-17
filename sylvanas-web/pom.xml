@@ -62,12 +62,6 @@
 
     <dependencies>
 
-
-        <dependency>
-            <groupId>com.fantasy</groupId>
-            <artifactId>sylvanas-service</artifactId>
-        </dependency>
-
         <!--servlet-->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -92,6 +86,11 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fantasy</groupId>
+            <artifactId>sylvanas-monitor</artifactId>
         </dependency>
 
     </dependencies>

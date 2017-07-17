@@ -24,7 +24,7 @@
         <module>sylvanas-web</module>
         <module>sylvanas-client</module>
         <module>sylvanas-core</module>
-        <module>sylvanas-service</module>
+        <module>sylvanas-monitor</module>
     </modules>
 
     <dependencyManagement>
@@ -41,10 +41,10 @@
                 <artifactId>sylvanas-core</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>com.fantasy</groupId>
-                <artifactId>sylvanas-service</artifactId>
+                <artifactId>sylvanas-monitor</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
 
