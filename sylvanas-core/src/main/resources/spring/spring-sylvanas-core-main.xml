@@ -11,7 +11,11 @@
     <!-- biz层注解驱动 -->
     <context:component-scan base-package="com.fantasy.sylvanas.core"/>
     <!--spring placeholder -->
-    <context:property-placeholder location="classpath:config.properties"/>
+    <!--<context:property-placeholder location="classpath:config.properties"/>-->
 
+    <bean name="redisCenter" id="redisCenter" class="com.fantasy.sylvanas.client.RedisCenter" init-method="init"
+          destroy-method="destory">
+
+    </bean>
 
 </beans>

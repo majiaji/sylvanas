@@ -26,11 +26,14 @@ import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
 import com.alibaba.jstorm.batch.BatchId;
 import com.alibaba.jstorm.batch.IBatchSpout;
+import com.fantasy.sylvanas.client.RedisCenter;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 import shade.storm.com.google.common.collect.Lists;
 
 import java.util.List;
@@ -44,8 +47,12 @@ public class SimpleSpout implements IBatchSpout {
     private Properties props;
     private Long pollTimeout = 1000L;
 
+    private RedisCenter redisCenter;
+
     @Override
     public void prepare(Map stormConf, TopologyContext context) {
+        ApplicationContext applicationContext = new FileSystemXmlApplicationContext("spring-sylvanas-core-main.xml");
+        redisCenter = (RedisCenter) applicationContext.getBean("redisCenter");
         logger.error("prepare SimpleSpout");
         topicList = Lists.newLinkedList();
         topicList.add("sylvanas");

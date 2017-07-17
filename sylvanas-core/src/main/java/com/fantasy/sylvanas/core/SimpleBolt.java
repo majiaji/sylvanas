@@ -32,6 +32,8 @@ import com.alibaba.jstorm.utils.JStormUtils;
 import com.alibaba.jstorm.utils.TimeCacheMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -45,6 +47,7 @@ public class SimpleBolt implements IBasicBolt, ICommitter {
 
     private TimeCacheMap<BatchId, AtomicLong> counters;
     private BatchId currentId;
+//    private ApplicationContext applicationContext;
 
     @Override
     public void prepare(Map stormConf, TopologyContext context) {
@@ -52,6 +55,7 @@ public class SimpleBolt implements IBasicBolt, ICommitter {
 
         int timeoutSeconds = JStormUtils.parseInt(conf.get(Config.TOPOLOGY_MESSAGE_TIMEOUT_SECS), 30);
         counters = new TimeCacheMap<>(timeoutSeconds);
+//        applicationContext = new ClassPathXmlApplicationContext("spring-sylvanas-core-main.xml");
 
         logger.info("Successfully do prepare");
     }
