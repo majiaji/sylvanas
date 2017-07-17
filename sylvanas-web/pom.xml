@@ -61,12 +61,12 @@
     </build>
 
     <dependencies>
-       
+
+
         <dependency>
             <groupId>com.fantasy</groupId>
-            <artifactId>sylvanas-core</artifactId>
+            <artifactId>sylvanas-service</artifactId>
         </dependency>
-
 
         <!--servlet-->
         <dependency>
