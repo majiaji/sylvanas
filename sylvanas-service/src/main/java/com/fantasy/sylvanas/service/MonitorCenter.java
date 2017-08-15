@@ -1,4 +1,4 @@
-package com.fantasy.sylvanas.monitor;
+package com.fantasy.sylvanas.service;
 
 import com.fantasy.sylvanas.client.RedisCenter;
 import org.springframework.stereotype.Service;

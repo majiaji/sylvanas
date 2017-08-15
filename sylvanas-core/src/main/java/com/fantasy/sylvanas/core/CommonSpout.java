@@ -40,8 +40,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public class SimpleSpout implements IBatchSpout {
-    private static final Logger logger = LoggerFactory.getLogger(SimpleSpout.class);
+public class CommonSpout implements IBatchSpout {
+    private static final Logger logger = LoggerFactory.getLogger(CommonSpout.class);
     KafkaConsumer<String, String> kafkaConsumer;
     private List<String> topicList;
     private Properties props;
@@ -53,7 +53,7 @@ public class SimpleSpout implements IBatchSpout {
     public void prepare(Map stormConf, TopologyContext context) {
         ApplicationContext applicationContext = new FileSystemXmlApplicationContext("spring-sylvanas-core-main.xml");
         redisCenter = (RedisCenter) applicationContext.getBean("redisCenter");
-        logger.error("prepare SimpleSpout");
+        logger.error("prepare CommonSpout");
         topicList = Lists.newLinkedList();
         topicList.add("sylvanas");
         props = new Properties();
@@ -69,7 +69,7 @@ public class SimpleSpout implements IBatchSpout {
 
     @Override
     public void execute(Tuple input, BasicOutputCollector collector) {
-        logger.error("SimpleSpout start Execute");
+        logger.error("CommonSpout start Execute");
         try {
             while (true) {
                 try {

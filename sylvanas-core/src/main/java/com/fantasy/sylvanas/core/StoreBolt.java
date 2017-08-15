@@ -42,11 +42,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class SimpleBolt implements IBasicBolt, ICommitter {
+public class StoreBolt implements IBasicBolt, ICommitter {
     public static final String COUNT_BOLT_NAME = "Count";
     public static final String SUM_BOLT_NAME = "Sum";
     private static final long serialVersionUID = 5720810158625748042L;
-    private static final Logger logger = LoggerFactory.getLogger(SimpleBolt.class);
+    private static final Logger logger = LoggerFactory.getLogger(StoreBolt.class);
     private Map conf;
 
     private TimeCacheMap<BatchId, AtomicLong> counters;

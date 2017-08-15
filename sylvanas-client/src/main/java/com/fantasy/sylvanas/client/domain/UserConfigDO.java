@@ -1,6 +1,10 @@
-package com.fantasy.sylvanas.service.domain;
+package com.fantasy.sylvanas.client.domain;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Created by jiaji on 2017/8/14.
@@ -30,10 +34,16 @@ public class UserConfigDO {
      * 场景名
      */
     private String scene;
+
     /**
      * 具体配置
      */
     private String config;
+
+    Map<String, Object> getConfigMap() {
+        return JSON.parseObject(config, new TypeReference<Map<String, Object>>() {
+        });
+    }
 
     public Long getId() {
         return id;

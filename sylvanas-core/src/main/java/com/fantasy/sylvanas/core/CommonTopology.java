@@ -25,22 +25,22 @@ import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SimpleBatchTopology {
-    private static final Logger logger = LoggerFactory.getLogger(SimpleSpout.class);
+public class CommonTopology {
+    private static final Logger logger = LoggerFactory.getLogger(CommonTopology.class);
 
     static boolean isLocal = true;
     static Config conf = JStormHelper.getConfig(null);
-    static String topologyName;
+    static String topologyName = "commonTopology";
 
     public TopologyBuilder setBuilder() {
         BatchTopologyBuilder topologyBuilder = new BatchTopologyBuilder(topologyName);
-        BoltDeclarer boltDeclarer = topologyBuilder.setSpout("Spout", new SimpleSpout(), 1);
-        topologyBuilder.setBolt("Bolt", new SimpleBolt(), 2).shuffleGrouping("Spout");
+        BoltDeclarer boltDeclarer = topologyBuilder.setSpout("Spout", new CommonSpout(), 1);
+        topologyBuilder.setBolt("Bolt", new StoreBolt(), 2).shuffleGrouping("Spout");
         return topologyBuilder.getTopologyBuilder();
     }
 
     void init() {
-        logger.error("prepare SimpleBatchTopology");
+        logger.error("prepare CommonTopology");
         conf = new Config();
         isLocal = true;
         String[] className = Thread.currentThread().getStackTrace()[1].getClassName().split("\\.");
