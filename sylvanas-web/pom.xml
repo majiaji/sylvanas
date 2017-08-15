@@ -90,7 +90,7 @@
 
         <dependency>
             <groupId>com.fantasy</groupId>
-            <artifactId>sylvanas-monitor</artifactId>
+            <artifactId>sylvanas-service</artifactId>
         </dependency>
 
     </dependencies>

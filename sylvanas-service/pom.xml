@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>sylvanas-monitor</artifactId>
+    <artifactId>sylvanas-service</artifactId>
     <dependencies>
         <dependency>
             <groupId>com.fantasy</groupId>
