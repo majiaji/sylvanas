@@ -1,4 +1,4 @@
-package com.fantasy.sylvanas.monitor.domain;
+package com.fantasy.sylvanas.service.domain;
 
 import java.util.Date;
 

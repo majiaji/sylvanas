@@ -1,6 +1,6 @@
-package com.fantasy.sylvanas.monitor.dao;
+package com.fantasy.sylvanas.service.dao;
 
-import com.fantasy.sylvanas.monitor.domain.UserConfigDO;
+import com.fantasy.sylvanas.service.domain.UserConfigDO;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
