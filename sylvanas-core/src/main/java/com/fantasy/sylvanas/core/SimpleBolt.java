@@ -67,10 +67,12 @@ public class SimpleBolt implements IBasicBolt, ICommitter {
     @Override
     public void execute(Tuple input, BasicOutputCollector collector) {
         String value = input.getString(0);
-        List<String> wordList = Splitter.on(" ").splitToList(value);
+        List<String> wordList = Splitter.on(" ").splitToList(value.trim());
         Jedis jedis = redisCenter.getInstance();
         for (String each : wordList) {
-            jedis.hincrBy("wordCount", each, 1);
+            if (!each.equals("")) {
+                jedis.hincrBy("wordCount", each, 1);
+            }
         }
         jedis.close();
         System.out.println(value);

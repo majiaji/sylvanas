@@ -15,7 +15,6 @@
 
     <bean name="redisCenter" id="redisCenter" class="com.fantasy.sylvanas.client.RedisCenter" init-method="init"
           destroy-method="destory">
-
     </bean>
 
 </beans>
