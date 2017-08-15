@@ -11,6 +11,6 @@
         <typeAlias alias="UserConfigDO" type="com.fantasy.sylvanas.monitor.domain.UserConfigDO"/>
     </typeAliases>
     <mappers>
-        <mapper resource="sqlmap/sql-user-config.xml"/>
+        <!--<mapper resource="sqlmap/sql-user-config.xml"/>-->
     </mappers>
 </configuration>
