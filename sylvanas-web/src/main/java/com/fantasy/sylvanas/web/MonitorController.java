@@ -1,6 +1,6 @@
 package com.fantasy.sylvanas.web;
 
-import com.fantasy.sylvanas.monitor.MonitorCenter;
+import com.fantasy.sylvanas.service.MonitorCenter;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;

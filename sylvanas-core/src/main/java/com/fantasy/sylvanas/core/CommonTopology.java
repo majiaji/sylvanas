@@ -34,12 +34,16 @@ public class CommonTopology {
 
     public TopologyBuilder setBuilder() {
         BatchTopologyBuilder topologyBuilder = new BatchTopologyBuilder(topologyName);
-        BoltDeclarer boltDeclarer = topologyBuilder.setSpout("Spout", new CommonSpout(), 1);
-        topologyBuilder.setBolt("Bolt", new StoreBolt(), 2).shuffleGrouping("Spout");
+        BoltDeclarer boltDeclarer = topologyBuilder.setSpout("commonSpout", new CommonSpout(), 1);
+        topologyBuilder.setBolt("checkBolt", new CheckBolt(), 1).shuffleGrouping("commonSpout");
+        topologyBuilder.setBolt("splitBolt", new SplitBolt(), 1).shuffleGrouping("checkBolt");
+        topologyBuilder.setBolt("countBolt", new CountBolt(), 1).shuffleGrouping("splitBolt");
         return topologyBuilder.getTopologyBuilder();
     }
 
     void init() {
+//        ConfigExtension.setUserDefinedLog4jConf((Map conf, String fileName))
+
         logger.error("prepare CommonTopology");
         conf = new Config();
         isLocal = true;

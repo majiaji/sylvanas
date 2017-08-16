@@ -13,8 +13,14 @@
     <!--spring placeholder -->
     <!--<context:property-placeholder location="classpath:config.properties"/>-->
 
-    <bean name="redisCenter" id="redisCenter" class="com.fantasy.sylvanas.client.RedisCenter" init-method="init"
+    <bean id="redisCenter" class="com.fantasy.sylvanas.client.RedisCenter" init-method="init"
           destroy-method="destory">
     </bean>
 
+    <bean id="httpUserConfigCenter" class="com.fantasy.sylvanas.client.HttpUserConfigCenter">
+        <property name="httpCallCenter" ref="httpCallCenter"/>
+    </bean>
+
+    <bean id="httpCallCenter" class="com.fantasy.sylvanas.client.HttpCallCenter" init-method="init"/>
 </beans>
+

@@ -85,7 +85,7 @@ public class StoreBolt implements IBasicBolt, ICommitter {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("counters"));
+        declarer.declare(new Fields("logs"));
     }
 
     @Override

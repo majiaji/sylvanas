@@ -1,7 +1,7 @@
 package com.fantasy.sylvanas.web;
 
-import com.fantasy.sylvanas.monitor.dao.UserConfigDAO;
-import com.fantasy.sylvanas.monitor.domain.UserConfigDO;
+import com.fantasy.sylvanas.client.domain.UserConfigDO;
+import com.fantasy.sylvanas.service.dao.IUserConfigDAO;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -16,7 +16,7 @@ import java.util.List;
 public class TestDBController {
 
     @Resource
-    UserConfigDAO userConfigDAO;
+    IUserConfigDAO userConfigDAO;
 
     @RequestMapping("/test/db")
     @ResponseBody

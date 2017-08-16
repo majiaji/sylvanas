@@ -24,9 +24,10 @@ import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import backtype.storm.tuple.Values;
+import backtype.storm.utils.Utils;
 import com.alibaba.jstorm.batch.BatchId;
 import com.alibaba.jstorm.batch.IBatchSpout;
-import com.fantasy.sylvanas.client.RedisCenter;
+import com.fantasy.sylvanas.client.HttpUserConfigCenter;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -39,6 +40,7 @@ import shade.storm.com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 
 public class CommonSpout implements IBatchSpout {
     private static final Logger logger = LoggerFactory.getLogger(CommonSpout.class);
@@ -46,13 +48,15 @@ public class CommonSpout implements IBatchSpout {
     private List<String> topicList;
     private Properties props;
     private Long pollTimeout = 1000L;
+    private Random idGenerate;
 
-    private RedisCenter redisCenter;
+
+    private HttpUserConfigCenter httpUserConfigCenter;
 
     @Override
     public void prepare(Map stormConf, TopologyContext context) {
         ApplicationContext applicationContext = new FileSystemXmlApplicationContext("spring-sylvanas-core-main.xml");
-        redisCenter = (RedisCenter) applicationContext.getBean("redisCenter");
+        httpUserConfigCenter = (HttpUserConfigCenter) applicationContext.getBean("httpUserConfigCenter");
         logger.error("prepare CommonSpout");
         topicList = Lists.newLinkedList();
         topicList.add("sylvanas");
@@ -65,6 +69,9 @@ public class CommonSpout implements IBatchSpout {
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         kafkaConsumer = new KafkaConsumer<>(props);
         kafkaConsumer.subscribe(topicList);
+
+        idGenerate = new Random(Utils.secureRandomLong());
+
     }
 
     @Override
@@ -76,7 +83,7 @@ public class CommonSpout implements IBatchSpout {
                     ConsumerRecords<String, String> records = kafkaConsumer.poll(pollTimeout);
                     for (ConsumerRecord<String, String> record : records) {
                         if (record.value() != null) {
-                            collector.emit(new Values(record.value()));
+                            collector.emit(new Values(idGenerate.nextLong(), record.value()));
                         }
                     }
                 } catch (Throwable t) {
@@ -97,7 +104,7 @@ public class CommonSpout implements IBatchSpout {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("Value"));
+        declarer.declare(new Fields("id", "data"));
     }
 
     @Override
