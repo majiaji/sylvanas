@@ -13,6 +13,7 @@ import com.alibaba.jstorm.batch.BatchId;
 import com.alibaba.jstorm.batch.ICommitter;
 import com.fantasy.sylvanas.client.HttpUserConfigCenter;
 import com.fantasy.sylvanas.client.domain.FlumeData;
+import com.fantasy.sylvanas.client.domain.LogField;
 import com.fantasy.sylvanas.client.domain.UserConfigDO;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
@@ -47,24 +48,51 @@ public class SplitBolt implements IBasicBolt, ICommitter {
             System.out.println("split: " + input.getLong(0) + "  " + input.getString(1));
             FlumeData flumeData = JSON.parseObject(input.getString(1), FlumeData.class);
             UserConfigDO userConfigDO = httpUserConfigCenter.getByKey(flumeData);
-            //获取切分的逻辑
-            String splitRule = (String) userConfigDO.getConfigMap().get("split");
+            //切分的逻辑
+            String splitRule = (String) userConfigDO.getConfigMap().get("splitRule");
             if (StringUtils.isEmpty(splitRule)) {
                 splitRule = "default";
             }
-            Map<String, String> paramMap = null;
-            switch (splitRule) {
-                case "default": {
-                    List<String> splitResult = Splitter.on("|").splitToList(flumeData.getBody());
-                    paramMap = Maps.newLinkedHashMap();
+            List<String> splitResult = null;
+            try {
+                switch (splitRule) {
+                    case "default": {
+                        splitResult = Splitter.on("|").splitToList(flumeData.getBody());
+                        break;
+                    }
+                    default: {
+                    }
+                }
+            } catch (Exception e) {
+                logger.error("切分异常 flumeData:{}", flumeData);
+                return;
+            }
+            if (splitResult == null || splitResult.size() == 0) {
+                logger.error("切分结果为空,请检查格式 flumeData:{}", flumeData);
+                return;
+            }
+            //收集结果
+            Map<String, String> paramMap = Maps.newHashMap();
+            List<LogField> logFieldRule = JSON.parseArray((String) userConfigDO.getConfigMap().get("logFieldRuleStr"), LogField.class);
+            try {
+                //默认全取
+                if (logFieldRule == null) {
                     for (int i = 0; i < splitResult.size(); i++) {
                         paramMap.put("param_" + i, splitResult.get(i));
                     }
-                    break;
                 }
-                default: {
-
+                //按配置来
+                else {
+                    for (int i = 0; i < splitResult.size(); i++) {
+                        LogField logField = logFieldRule.get(i);
+                        if (logField.getNeed()) {
+                            paramMap.put(StringUtils.isEmpty(logField.getName()) ? "param_" + i : logField.getName(), splitResult.get(i));
+                        }
+                    }
                 }
+            } catch (Exception e) {
+                logger.error("提取异常 flumeData:{}", flumeData);
+                return;
             }
             collector.emit(new Values(input.getLong(0), input.getString(1), JSON.toJSONString(paramMap)));
         } catch (Throwable t) {

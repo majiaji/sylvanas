@@ -35,9 +35,9 @@ public class CommonTopology {
     public TopologyBuilder setBuilder() {
         BatchTopologyBuilder topologyBuilder = new BatchTopologyBuilder(topologyName);
         BoltDeclarer boltDeclarer = topologyBuilder.setSpout("commonSpout", new CommonSpout(), 1);
-        topologyBuilder.setBolt("checkBolt", new CheckBolt(), 1).shuffleGrouping("commonSpout");
-        topologyBuilder.setBolt("splitBolt", new SplitBolt(), 1).shuffleGrouping("checkBolt");
-        topologyBuilder.setBolt("countBolt", new CountBolt(), 1).shuffleGrouping("splitBolt");
+        topologyBuilder.setBolt("checkBolt", new CheckBolt(), 1).localOrShuffleGrouping("commonSpout");
+        topologyBuilder.setBolt("splitBolt", new SplitBolt(), 1).localOrShuffleGrouping("checkBolt");
+        topologyBuilder.setBolt("countBolt", new CountBolt(), 1).localOrShuffleGrouping("splitBolt");
         return topologyBuilder.getTopologyBuilder();
     }
 
