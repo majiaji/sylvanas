@@ -31,11 +31,11 @@ public class FlumeData {
                 '}';
     }
 
-    private static class Headers {
-        String timestamp;
-        String host;
-        String service;
-        String scene;
+    public static class Headers {
+        private String timestamp;
+        private String host;
+        private String service;
+        private String scene;
 
         public String getTimestamp() {
             return timestamp;
@@ -71,7 +71,7 @@ public class FlumeData {
 
         @Override
         public String toString() {
-            return "Header{" +
+            return "Headers{" +
                     "timestamp='" + timestamp + '\'' +
                     ", host='" + host + '\'' +
                     ", service='" + service + '\'' +

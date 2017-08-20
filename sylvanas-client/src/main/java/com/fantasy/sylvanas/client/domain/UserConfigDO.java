@@ -40,7 +40,7 @@ public class UserConfigDO {
      */
     private String config;
 
-    Map<String, Object> getConfigMap() {
+    public Map<String, Object> getConfigMap() {
         return JSON.parseObject(config, new TypeReference<Map<String, Object>>() {
         });
     }

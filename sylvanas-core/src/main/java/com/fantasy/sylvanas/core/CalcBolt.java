@@ -5,6 +5,7 @@ import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.FailedException;
 import backtype.storm.topology.IBasicBolt;
 import backtype.storm.topology.OutputFieldsDeclarer;
+import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
 import com.alibaba.jstorm.batch.BatchId;
 import com.alibaba.jstorm.batch.ICommitter;
@@ -32,7 +33,7 @@ public class CalcBolt implements IBasicBolt, ICommitter {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-
+        declarer.declare(new Fields("id", "data"));
     }
 
     @Override
