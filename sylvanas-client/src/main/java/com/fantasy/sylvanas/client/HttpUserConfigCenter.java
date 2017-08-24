@@ -3,6 +3,7 @@ package com.fantasy.sylvanas.client;
 import com.alibaba.fastjson.JSON;
 import com.fantasy.sylvanas.client.domain.FlumeData;
 import com.fantasy.sylvanas.client.domain.UserConfigDO;
+import com.fantasy.sylvanas.client.domain.UserConfigDTO;
 import com.google.common.collect.Maps;
 
 import java.util.Map;
@@ -22,13 +23,13 @@ public class HttpUserConfigCenter {
         this.httpCallCenter = httpCallCenter;
     }
 
-    public UserConfigDO getByKey(FlumeData flumeData) {
+    public UserConfigDTO getByKey(FlumeData flumeData) {
         HttpCallCenter.CallParam callParam = new HttpCallCenter.CallParam();
         Map<String, String> param = Maps.newHashMap();
         param.put("service", flumeData.getHeaders().getService());
         param.put("scene", flumeData.getHeaders().getScene());
         callParam.setBodyParam(param);
         String result = httpCallCenter.doCall("http://localhost:8081/getUserConfig", callParam, "get");
-        return JSON.parseObject(result, UserConfigDO.class);
+        return JSON.parseObject(result, UserConfigDTO.class);
     }
 }

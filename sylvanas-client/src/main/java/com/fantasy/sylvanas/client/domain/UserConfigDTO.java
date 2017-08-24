@@ -5,11 +5,12 @@ import com.alibaba.fastjson.JSON;
 import org.springframework.beans.BeanUtils;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
- * Created by jiaji on 2017/8/14.
+ * Created by jiaji on 2017/8/20.
  */
-public class UserConfigDO {
+public class UserConfigDTO {
     /**
      * 主键
      */
@@ -37,22 +38,14 @@ public class UserConfigDO {
     /**
      * 具体配置
      */
-    private String config;
+    private Map<String, Object> configMap;
 
-    public static UserConfigDTO convertToDTO(UserConfigDO userConfigDO) {
-        if (userConfigDO == null) return null;
-        UserConfigDTO userConfigDTO = new UserConfigDTO();
-        BeanUtils.copyProperties(userConfigDO, userConfigDTO);
-        userConfigDTO.setConfigMap(JSON.parseObject(userConfigDO.getConfig()));
-        return userConfigDTO;
-    }
-
-    public String getConfig() {
-        return config;
-    }
-
-    public void setConfig(String config) {
-        this.config = config;
+    public static UserConfigDO convertToDO(UserConfigDTO userConfigDTO) {
+        if (userConfigDTO == null) return null;
+        UserConfigDO userConfigDO = new UserConfigDO();
+        BeanUtils.copyProperties(userConfigDTO, userConfigDO);
+        userConfigDO.setConfig(JSON.toJSONString(userConfigDTO.getConfigMap()));
+        return userConfigDO;
     }
 
     public Long getId() {
@@ -95,4 +88,11 @@ public class UserConfigDO {
         this.scene = scene;
     }
 
+    public Map<String, Object> getConfigMap() {
+        return configMap;
+    }
+
+    public void setConfigMap(Map<String, Object> configMap) {
+        this.configMap = configMap;
+    }
 }

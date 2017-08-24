@@ -14,7 +14,7 @@ import com.alibaba.jstorm.batch.ICommitter;
 import com.fantasy.sylvanas.client.HttpUserConfigCenter;
 import com.fantasy.sylvanas.client.domain.FlumeData;
 import com.fantasy.sylvanas.client.domain.LogField;
-import com.fantasy.sylvanas.client.domain.UserConfigDO;
+import com.fantasy.sylvanas.client.domain.UserConfigDTO;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -47,13 +47,13 @@ public class SplitBolt implements IBasicBolt, ICommitter {
         try {
             System.out.println("split: " + input.getLong(0) + "  " + input.getString(1));
             FlumeData flumeData = JSON.parseObject(input.getString(1), FlumeData.class);
-            UserConfigDO userConfigDO = httpUserConfigCenter.getByKey(flumeData);
+            UserConfigDTO userConfigDTO = httpUserConfigCenter.getByKey(flumeData);
             //切分的逻辑
-            String splitRule = (String) userConfigDO.getConfigMap().get("splitRule");
+            String splitRule = (String) userConfigDTO.getConfigMap().get("splitRule");
             if (StringUtils.isEmpty(splitRule)) {
                 splitRule = "default";
             }
-            List<String> splitResult = null;
+            List<String> splitResult;
             try {
                 switch (splitRule) {
                     case "default": {
@@ -61,19 +61,21 @@ public class SplitBolt implements IBasicBolt, ICommitter {
                         break;
                     }
                     default: {
+                        splitResult = Splitter.on("|").splitToList(flumeData.getBody());
+                        break;
                     }
                 }
             } catch (Exception e) {
                 logger.error("切分异常 flumeData:{}", flumeData);
                 return;
             }
-            if (splitResult == null || splitResult.size() == 0) {
+            if (splitResult.size() == 0) {
                 logger.error("切分结果为空,请检查格式 flumeData:{}", flumeData);
                 return;
             }
             //收集结果
             Map<String, String> paramMap = Maps.newHashMap();
-            List<LogField> logFieldRule = JSON.parseArray((String) userConfigDO.getConfigMap().get("logFieldRuleStr"), LogField.class);
+            List<LogField> logFieldRule = JSON.parseArray(JSON.toJSONString(userConfigDTO.getConfigMap().get("logFieldRule")), LogField.class);
             try {
                 //默认全取
                 if (logFieldRule == null) {
@@ -83,10 +85,10 @@ public class SplitBolt implements IBasicBolt, ICommitter {
                 }
                 //按配置来
                 else {
-                    for (int i = 0; i < splitResult.size(); i++) {
+                    for (int i = 0; i < logFieldRule.size(); i++) {
                         LogField logField = logFieldRule.get(i);
                         if (logField.getNeed()) {
-                            paramMap.put(StringUtils.isEmpty(logField.getName()) ? "param_" + i : logField.getName(), splitResult.get(i));
+                            paramMap.put(StringUtils.isEmpty(logField.getName()) ? "param_" + i : logField.getName(), splitResult.get(logField.getIndex()));
                         }
                     }
                 }

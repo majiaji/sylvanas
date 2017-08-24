@@ -1,6 +1,6 @@
 package com.fantasy.sylvanas.web;
 
-import com.fantasy.sylvanas.client.domain.UserConfigDO;
+import com.fantasy.sylvanas.client.domain.UserConfigDTO;
 import com.fantasy.sylvanas.service.IUserConfigCenter;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +18,7 @@ public class UserConfigController {
 
     @RequestMapping("/getUserConfig")
     @ResponseBody
-    public UserConfigDO getUserConfig(String service, String scene) {
+    public UserConfigDTO getUserConfig(String service, String scene) {
         return userConfigCenter.getByKey(service, scene);
     }
 }

@@ -80,7 +80,7 @@
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    <!-- Handle HTTP Delete method -->
+    <!-- Handle HTTP    Delete method -->
     <filter>
         <filter-name>HiddenHttpMethodFilter</filter-name>
         <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>

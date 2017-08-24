@@ -13,7 +13,7 @@ import com.alibaba.jstorm.batch.BatchId;
 import com.alibaba.jstorm.batch.ICommitter;
 import com.fantasy.sylvanas.client.HttpUserConfigCenter;
 import com.fantasy.sylvanas.client.domain.FlumeData;
-import com.fantasy.sylvanas.client.domain.UserConfigDO;
+import com.fantasy.sylvanas.client.domain.UserConfigDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -47,8 +47,8 @@ public class CheckBolt implements IBasicBolt, ICommitter {
                 logger.warn("非法的flumeData:{}", flumeData);
                 return;
             }
-            UserConfigDO userConfigDO = httpUserConfigCenter.getByKey(flumeData);
-            if (userConfigDO == null) {
+            UserConfigDTO userConfigDTO = httpUserConfigCenter.getByKey(flumeData);
+            if (userConfigDTO == null) {
                 logger.warn("请先配置接入{}", flumeData);
                 return;
             }

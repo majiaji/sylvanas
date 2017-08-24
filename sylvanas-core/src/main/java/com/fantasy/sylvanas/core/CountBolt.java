@@ -18,7 +18,7 @@ import com.alibaba.jstorm.batch.ICommitter;
 import com.fantasy.sylvanas.client.HttpUserConfigCenter;
 import com.fantasy.sylvanas.client.RedisCenter;
 import com.fantasy.sylvanas.client.domain.FlumeData;
-import com.fantasy.sylvanas.client.domain.UserConfigDO;
+import com.fantasy.sylvanas.client.domain.UserConfigDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -45,7 +45,7 @@ public class CountBolt implements IBasicBolt, ICommitter {
     @Override
     public void execute(Tuple input, BasicOutputCollector collector) {
         FlumeData flumeData = JSON.parseObject(input.getString(1), FlumeData.class);
-        UserConfigDO userConfigDO = httpUserConfigCenter.getByKey(flumeData);
+        UserConfigDTO userConfigDTO = httpUserConfigCenter.getByKey(flumeData);
         Jedis jedis = redisCenter.getInstance();
         if (jedis == null) {
             logger.error("获取jedis资源失败，统计失败");
