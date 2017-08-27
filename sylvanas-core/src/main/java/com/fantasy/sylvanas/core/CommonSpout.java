@@ -28,6 +28,7 @@ import backtype.storm.utils.Utils;
 import com.alibaba.jstorm.batch.BatchId;
 import com.alibaba.jstorm.batch.IBatchSpout;
 import com.fantasy.sylvanas.client.HttpUserConfigCenter;
+import com.fantasy.sylvanas.client.RedisCenter;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -35,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
+import redis.clients.jedis.Jedis;
 import shade.storm.com.google.common.collect.Lists;
 
 import java.util.List;
@@ -49,6 +51,7 @@ public class CommonSpout implements IBatchSpout {
     private Properties props;
     private Long pollTimeout = 1000L;
     private Random idGenerate;
+    private RedisCenter redisCenter;
 
 
     private HttpUserConfigCenter httpUserConfigCenter;
@@ -57,6 +60,7 @@ public class CommonSpout implements IBatchSpout {
     public void prepare(Map stormConf, TopologyContext context) {
         ApplicationContext applicationContext = new FileSystemXmlApplicationContext("spring-sylvanas-core-main.xml");
         httpUserConfigCenter = (HttpUserConfigCenter) applicationContext.getBean("httpUserConfigCenter");
+        redisCenter = (RedisCenter) applicationContext.getBean("redisCenter");
         logger.error("prepare CommonSpout");
         topicList = Lists.newLinkedList();
         topicList.add("sylvanas");
@@ -81,17 +85,21 @@ public class CommonSpout implements IBatchSpout {
             while (true) {
                 try {
                     ConsumerRecords<String, String> records = kafkaConsumer.poll(pollTimeout);
+                    Jedis jedis = redisCenter.getInstance();
                     for (ConsumerRecord<String, String> record : records) {
                         if (record.value() != null) {
+                            jedis.incr("spout_num");
                             collector.emit(new Values(idGenerate.nextLong(), record.value()));
                         }
                     }
+                    jedis.close();
                 } catch (Throwable t) {
                     logger.error(t.getMessage(), t);
                 }
             }
         } finally {
             kafkaConsumer.close();
+
         }
     }
 
