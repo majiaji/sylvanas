@@ -11,6 +11,7 @@ import backtype.storm.topology.IBasicBolt;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
+import backtype.storm.tuple.Values;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.alibaba.jstorm.batch.BatchId;
@@ -108,6 +109,7 @@ public class CountBolt implements IBasicBolt, ICommitter {
         } finally {
             jedis.close();
         }
+        collector.emit(new Values(input.getLong(0), input.getString(1), JSON.toJSONString(storeMap)));
     }
 
     private Boolean conditionFilter(CountRule countRule, Map<String, String> paramMap) {
@@ -130,12 +132,12 @@ public class CountBolt implements IBasicBolt, ICommitter {
 
     String getCountKey(CountRule countRule, Map<String, String> paramMap) {
         StringBuilder sb = new StringBuilder();
-        sb.append(countRule.getRule()).append("#");
+        sb.append(countRule.getRule()).append("_");
         if (countRule.getField() != null) {
-            sb.append("field:").append(countRule.getField()).append("#");
+            sb.append("field:").append(countRule.getField()).append("_");
         }
         if (countRule.getGroupBy() != null) {
-            sb.append("groupBy:").append(countRule.getGroupBy()).append("=").append(paramMap.get(countRule.getGroupBy())).append("#");
+            sb.append("groupBy:").append(countRule.getGroupBy()).append("=").append(paramMap.get(countRule.getGroupBy())).append("_");
         }
         return sb.toString();
     }
@@ -147,7 +149,7 @@ public class CountBolt implements IBasicBolt, ICommitter {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("id", "data"));
+        declarer.declare(new Fields("id", "data", "storeMap"));
     }
 
     @Override

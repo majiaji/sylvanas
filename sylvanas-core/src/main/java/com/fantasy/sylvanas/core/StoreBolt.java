@@ -17,7 +17,6 @@
  */
 package com.fantasy.sylvanas.core;
 
-import backtype.storm.Config;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.BasicOutputCollector;
 import backtype.storm.topology.FailedException;
@@ -25,20 +24,15 @@ import backtype.storm.topology.IBasicBolt;
 import backtype.storm.topology.OutputFieldsDeclarer;
 import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Tuple;
-import backtype.storm.utils.Utils;
 import com.alibaba.jstorm.batch.BatchId;
 import com.alibaba.jstorm.batch.ICommitter;
-import com.alibaba.jstorm.utils.JStormUtils;
 import com.alibaba.jstorm.utils.TimeCacheMap;
 import com.fantasy.sylvanas.client.RedisCenter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
-import redis.clients.jedis.Jedis;
-import shade.storm.com.google.common.base.Splitter;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -56,26 +50,13 @@ public class StoreBolt implements IBasicBolt, ICommitter {
 
     @Override
     public void prepare(Map stormConf, TopologyContext context) {
-        this.conf = stormConf;
-        int timeoutSeconds = JStormUtils.parseInt(conf.get(Config.TOPOLOGY_MESSAGE_TIMEOUT_SECS), 30);
-        counters = new TimeCacheMap<>(timeoutSeconds);
         ApplicationContext applicationContext = new FileSystemXmlApplicationContext("spring-sylvanas-core-main.xml");
         redisCenter = (RedisCenter) applicationContext.getBean("redisCenter");
-        logger.info("Successfully do prepare");
     }
 
     @Override
     public void execute(Tuple input, BasicOutputCollector collector) {
-        String value = input.getString(0);
-        List<String> wordList = Splitter.on(" ").splitToList(value.trim());
-        Jedis jedis = redisCenter.getInstance();
-        for (String each : wordList) {
-            if (!each.equals("")) {
-                jedis.hincrBy("wordCount", each, 1);
-            }
-        }
-        jedis.close();
-        System.out.println(value);
+        //do store  logic in mysql/hbase
     }
 
     @Override
@@ -85,7 +66,7 @@ public class StoreBolt implements IBasicBolt, ICommitter {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("logs"));
+        declarer.declare(new Fields("id"));
     }
 
     @Override
@@ -95,32 +76,10 @@ public class StoreBolt implements IBasicBolt, ICommitter {
 
     @Override
     public byte[] commit(BatchId id) throws FailedException {
-        logger.info("Receive BatchId " + id);
-        if (currentId == null) {
-            currentId = id;
-        } else if (currentId.getId() >= id.getId()) {
-            logger.info("Current BatchId is " + currentId + ", receive:" + id);
-            throw new RuntimeException();
-        }
-        currentId = id;
-
-        AtomicLong counter = (AtomicLong) counters.remove(id);
-        if (counter == null) {
-            counter = new AtomicLong(0);
-        }
-
-        logger.info("Flush " + id + "," + counter);
-        return Utils.serialize(id);
+        return new byte[0];
     }
 
     @Override
     public void revert(BatchId id, byte[] commitResult) {
-        logger.info("Receive BatchId " + id);
-
-        BatchId failedId = (BatchId) Utils.javaDeserialize(commitResult);
-
-        if (!failedId.equals(id)) {
-            logger.info("Deserialized error  " + id);
-        }
     }
 }
