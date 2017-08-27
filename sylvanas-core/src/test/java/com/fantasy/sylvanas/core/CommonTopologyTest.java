@@ -7,9 +7,9 @@ import org.junit.Test;
  * Created by jiaji on 2017/8/26.
  */
 public class CommonTopologyTest {
-    public TreeNode mergeTrees(TreeNode t1, TreeNode t2) {
-
-    }
+//    public TreeNode mergeTrees(TreeNode t1, TreeNode t2) {
+//
+//    }
 
     @Test
     public void test() {
